@@ -1,0 +1,148 @@
+DROP TABLE IF EXISTS Admin;
+DROP TABLE IF EXISTS `User`;
+DROP TABLE IF EXISTS Post;
+DROP TABLE IF EXISTS `Like`;
+DROP TABLE IF EXISTS `Comment`;
+DROP TABLE IF EXISTS Reply;
+DROP TABLE IF EXISTS Resource;
+DROP TABLE IF EXISTS Log;
+DROP TABLE IF EXISTS DownloadHistory;
+DROP TABLE IF EXISTS Experience;
+
+CREATE TABLE Admin(
+	id 		INT		PRIMARY KEY AUTO_INCREMENT,
+	`password` VARCHAR(255) NOT NULL,
+	email 	VARCHAR(40) DEFAULT NULL,
+	salt 		VARCHAR(20)	NOT NULL
+)CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+CREATE TABLE `User` (
+	id INT AUTO_INCREMENT PRIMARY KEY,
+	`name` VARCHAR(20) DEFAULT NULL,
+	`password` VARCHAR(255) NOT NULL,
+	email VARCHAR(40) NOT NULL,
+	gender ENUM('Male', 'Female', 'unknown') DEFAULT 'unknown',
+	birthday DATE DEFAULT NULL,
+	salt VARCHAR(20) NOT NULL,
+	registerTime DATE DEFAULT NULL,
+	profilePhotoUrl VARCHAR(255) DEFAULT NULL,
+	LogInNum INT DEFAULT 0
+) AUTO_INCREMENT = 10000001 CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+CREATE TABLE Post (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  title VARCHAR(30) NOT NULL,
+  userId INT,
+  content TEXT DEFAULT NULL,
+  floorCount INT DEFAULT 0,
+  postTime DATETIME,
+	thumbnailUrls 	VARCHAR(2048) DEFAULT NULL,
+  imageurls VARCHAR(2048) DEFAULT NULL,
+  likeCount INT DEFAULT 0,
+  authority INT DEFAULT 0,
+  browseCount INT DEFAULT 0,
+  FOREIGN KEY (userId) REFERENCES `User`(id) ON DELETE SET NULL
+)CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+CREATE TABLE `Like` (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  postId INT,
+  userId INT,
+  likeTime DATETIME,
+  FOREIGN KEY (postId) REFERENCES Post(id) ON DELETE CASCADE,
+  FOREIGN KEY (userId) REFERENCES `User`(id)
+)CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+CREATE TABLE `Comment` (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  postId INT,
+  userId INT,
+  publishTime DATETIME,
+  content VARCHAR(255) DEFAULT NULL,
+  imageUrl VARCHAR(255) DEFAULT NULL,
+  floor INT,
+  FOREIGN KEY (postId) REFERENCES Post(id) ON DELETE CASCADE,
+  FOREIGN KEY (userId) REFERENCES `User`(id) ON DELETE SET NULL
+)CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+CREATE TABLE Reply (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  postId INT,
+  commentId INT,
+  userId INT,
+  publishTime DATETIME,
+  content VARCHAR(255) DEFAULT NULL,
+  FOREIGN KEY (postId) REFERENCES Post(id) ON DELETE CASCADE,
+  FOREIGN KEY (commentId) REFERENCES `Comment`(id) ON DELETE CASCADE,
+  FOREIGN KEY (userId) REFERENCES `User`(id) ON DELETE SET NULL
+)CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+CREATE TABLE Resource (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  userId INT,
+  title VARCHAR(30) DEFAULT NULL,
+  subject int,
+  size INT DEFAULT 0,
+  content TEXT DEFAULT NULL,
+  path VARCHAR(255) DEFAULT NULL,
+  imageUrl VARCHAR(255) DEFAULT NULL,
+  downloadCount INT DEFAULT 0,
+  authority INT DEFAULT 0,
+  downloadUrl VARCHAR(255) DEFAULT NULL,
+  FOREIGN KEY (userId) REFERENCES `User`(id) ON DELETE SET NULL
+)CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+CREATE TABLE Log (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  userId INT,
+  loginTime DATETIME,
+  FOREIGN KEY (userId) REFERENCES `User`(id) ON DELETE SET NULL
+)CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+CREATE TABLE DownloadHistory (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  userId INT,
+  resourceId INT,
+  downloadTime DATETIME,
+  FOREIGN KEY (userId) REFERENCES `User`(id) ON DELETE SET NULL,
+  FOREIGN KEY (resourceId) REFERENCES Resource(id)
+)CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+CREATE TABLE Experience (
+  id INT,
+  exp INT DEFAULT 0,
+  FOREIGN KEY (id) REFERENCES `User`(id) ON DELETE SET NULL
+)CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+CREATE TABLE ResourceCategories (
+  id INT NOT NULL AUTO_INCREMENT,
+  resourceId INT NOT NULL,
+  category int,
+  FOREIGN KEY (resourceId) REFERENCES Resource(id) ON DELETE CASCADE
+);
+
+CREATE TABLE `UserOnline` (
+	id INT primary key,
+	`name` VARCHAR(20) DEFAULT NULL,
+	`password` VARCHAR(255) NOT NULL,
+	email VARCHAR(40) NOT NULL,
+	gender ENUM('Male', 'Female', 'Helicopter') DEFAULT 'Helicopter',
+	birthday DATE DEFAULT NULL,
+	salt VARCHAR(20) NOT NULL,
+	registerTime DATE DEFAULT NULL,
+	profilePhotoUrl VARCHAR(255) DEFAULT NULL,
+	LogInNum INT DEFAULT 0,
+	token varchar(100) 
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+
+DELIMITER //
+
+CREATE TRIGGER user_insert_trigger
+AFTER INSERT ON User
+FOR EACH ROW
+BEGIN
+    INSERT INTO Experience (id, exp) VALUES (NEW.id, 0);
+END //
+
+DELIMITER ;

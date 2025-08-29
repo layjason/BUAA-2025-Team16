@@ -1,0 +1,71 @@
+/* 用于中间的面板，包括了阴影动画和膨胀动画 */
+.centre-panel{
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-left: 10px;
+    margin-right: 10px;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    padding-left: 20px;
+    padding-right: 20px;
+    border-radius: 10px;
+}
+
+.centre-expand{
+    border-radius: 10px;
+    background-color: #ffffff;
+    transition-property: margin-top, margin-bottom, box-shadow, padding-top, padding-bottom, margin-left, margin-right, padding-left, padding-right, backdrop-filter, background-color;
+    transition-duration: 0.2s;
+    transition-timing-function: linear;
+}
+
+.centre-expand:hover{
+    margin-top: 18px;
+    margin-bottom: 18px;
+    margin-left: 5px;
+    margin-right: 5px;
+    padding-top: 25px;
+    padding-bottom: 25px;
+    padding-left: 25px;
+    padding-right: 25px;
+}
+
+.end-panel{
+    transition-property: box-shadow;
+}
+
+/* 用于处理边上的面板 */
+.side-panel{
+    border-radius: 10px;
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+
+/* 边上的左边的面板 */
+.left-panel{
+    margin-left: 20%;
+    margin-right: 10px;
+}
+
+/* 边上的右边的面板 */
+.right-panel{
+    margin-right: 20%;
+    margin-left: 10px;
+}
+
+/* 用于处理最上面的面板，吸顶之后设置margin-top的问题 */
+.top-panel{
+    margin-top: 0px;
+}
+
+/* 边上的顶部的面板，仅吸顶时需要 */
+.top-panel:hover{
+    margin-top: 0px;
+}
+
+.side-panel-custom{
+    padding-top: 15px;
+    padding-bottom: 20px;
+    padding-left: 20px;
+    padding-right: 20px;
+}

@@ -1,0 +1,12 @@
+.page-container-3 {
+    display: flex;
+    flex-direction: row;
+}
+
+.left-column-3 {
+    flex: 2;
+}
+
+.right-column-3 {
+    flex: 1;  
+}

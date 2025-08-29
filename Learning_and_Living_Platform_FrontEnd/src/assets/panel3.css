@@ -1,0 +1,27 @@
+/* 用于处理边上的面板 */
+.side-panel-3{
+    border-radius: 10px;
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+
+/* 边上的左边的面板 */
+/* 容器提供了margin,所以不再需要很大的margin */
+.left-panel-3{
+    margin-left: 20%;
+    margin-right: 10px;
+}
+
+/* 边上的右边的面板 */
+.right-panel-3{
+    margin-left: 10px;
+    margin-right: 40%;
+    display: flex;
+    flex-direction: column;
+}
+.panel-padding-3{
+    padding-top: 15px;
+    padding-bottom: 15px;
+    padding-left: 15px;
+    padding-right: 15px;
+}

@@ -1,0 +1,29 @@
+.page-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.left-column {
+    flex: 1;
+    margin-left: 0px;
+    margin-right: 0px;
+    max-width: 25%;
+    max-height: 25%;
+}
+
+.right-column {
+    flex: 1;  
+    margin-left: 0px;
+    margin-right: 0px;
+    max-width: 25%;
+    max-height: 25%;
+}
+
+.centre-column {
+    flex: 2;
+    margin-top: 0px;
+    margin-left: 0px;
+    margin-right: 0px;
+    max-width: 50%;
+    max-height: 50%;
+}
