@@ -1,0 +1,12 @@
+-------------------------------------------------------------------------------
+Test set: com.example.lal.Controller.StatisticControllerTest
+-------------------------------------------------------------------------------
+Tests run: 7, Failures: 2, Errors: 0, Skipped: 0, Time elapsed: 4.102 s <<< FAILURE! - in com.example.lal.Controller.StatisticControllerTest
+testResourceClassificationStatistics_Positive  Time elapsed: 0.025 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <2> but was: <6>
+	at com.example.lal.Controller.StatisticControllerTest.testResourceClassificationStatistics_Positive(StatisticControllerTest.java:88)
+
+testResourceCountBySubject_Positive  Time elapsed: 0.003 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <3> but was: <10>
+	at com.example.lal.Controller.StatisticControllerTest.testResourceCountBySubject_Positive(StatisticControllerTest.java:115)
+
