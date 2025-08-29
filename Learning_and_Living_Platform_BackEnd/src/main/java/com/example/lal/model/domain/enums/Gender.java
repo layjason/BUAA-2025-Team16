@@ -6,7 +6,7 @@ public enum Gender {
     //ENUM('Male', 'Female', 'Helicopter')
     male("male"),
     female("female"),
-    helicopter("helicopter");
+    unknown("unknown");
     private final String value;
 
     private Gender(String value) {

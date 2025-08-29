@@ -21,7 +21,7 @@ CREATE TABLE `User` (
 	`name` VARCHAR(20) DEFAULT NULL,
 	`password` VARCHAR(255) NOT NULL,
 	email VARCHAR(40) NOT NULL,
-	gender ENUM('Male', 'Female', 'unknown') DEFAULT 'unknown',
+	gender ENUM('Male', 'Female', 'Unknown') DEFAULT 'Unknown',
 	birthday DATE DEFAULT NULL,
 	salt VARCHAR(20) NOT NULL,
 	registerTime DATE DEFAULT NULL,

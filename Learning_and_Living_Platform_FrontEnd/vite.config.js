@@ -16,10 +16,10 @@ export default defineConfig({
       '/api': {
         target: 'http://localhost:8080',
         changeOrigin: true,
-        rewrite: path => path.replace(/^\/api/, '')
+        rewrite: (path) => path.replace(/^\/api/, '')
       }
       // Optionally keep '/download' if used for direct file downloads:
       // '/download': { target: 'http://localhost:8080', changeOrigin: true },
     }
-  }
+  } 
 })

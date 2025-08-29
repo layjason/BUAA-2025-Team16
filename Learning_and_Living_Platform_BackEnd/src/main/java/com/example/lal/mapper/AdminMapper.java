@@ -8,8 +8,6 @@ import org.apache.ibatis.annotations.*;
 
 @Mapper
 public interface AdminMapper {
-    @Select("SELECT salt from Admin WHERE (id = #{idOrEmail} OR email = #{idOrEmail})")
-    String getAdminSaltByIdOrEmail(String idOrEmail);
     @Select("SELECT * FROM Admin WHERE (id = #{idOrEmail} OR email = #{idOrEmail}) AND password = #{password}")
     User verifyAdminByIdOrEmail(String idOrEmail, String password);
     @Select("SELECT * FROM Admin WHERE email = #{email}")

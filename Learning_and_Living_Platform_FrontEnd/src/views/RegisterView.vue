@@ -40,14 +40,12 @@ const form = reactive({
     email: '',
     password: '',
     password_repeat: '',
-    salt:''
 })
 
 function submitRegister() {
     post("user/register", {
         email: form.email,
         password: form.password,
-        salt: 'ns*&'
     },
         () => {
             Snackbar.success("success")

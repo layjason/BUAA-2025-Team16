@@ -503,7 +503,6 @@ const updateData = async () => {
 };
 
 
-
 function jumpToUser(userId) {
   if (userId > 0) {
     // window.open('/user/' + userId, '_blank');

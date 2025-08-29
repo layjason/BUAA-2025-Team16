@@ -59,9 +59,6 @@ public interface UserMapper {
     @Select("SELECT profilePhotoUrl FROM User WHERE id=#{userId};")
     String getProfilePhotoUrl(int userId);
 
-    @Select("SELECT salt from User WHERE (id = #{idOrEmail} OR email = #{idOrEmail})")
-    String getUserSaltByIdOrEmail(String idOrEmail);
-
     @Insert("INSERT  INTO UserOnline" +
             " (id,name,password,email,gender,birthday,registerTime,profilePhotoUrl,LogInNum) " +
             "VALUES (#{id},#{name},#{password},#{email},#{gender},#{birthday},#{registerTime},#{profilePhotoUrl},#{LogInNum})")

@@ -72,18 +72,8 @@ public class ConsoleController {
     public String verifyAdminRegister(VerifyRegisterRequest verifyRegisterRequest){
         System.out.println(verifyRegisterRequest.getEmail());
         String password = verifyRegisterRequest.getPassword();
-        String salt = UUID.randomUUID().toString();
-        salt = salt.replace("-", ""); // 去除字符串中的横线
-        //限制salt长度小于等于20
-        if (salt.length() > 20) {
-            salt = salt.substring(0, 20);
-        }
-        //进行两次加盐加密，分别模拟前端和后端的加盐加密
-        password = UserController.saltEncryption(password,salt);
-        password = UserController.saltEncryption(password,salt);
 
         verifyRegisterRequest.setPassword(password);
-        verifyRegisterRequest.setSalt(salt);
         try{
             String adminId = userService.addAdmin(verifyRegisterRequest);
             return "注册成功！\n你的Id为："+adminId;

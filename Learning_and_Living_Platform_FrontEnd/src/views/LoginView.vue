@@ -74,50 +74,48 @@ const isLogin = ref(false)
 
 
 const login = () => {
-    if (form.idOrEmail == '' || form.password == '') {
-        Snackbar.warning('请填写登录信息')
-    } else 
-    {
-        console.log({idOrEmail: form.idOrEmail})
-        get('user/getSalt', {
-            idOrEmail: "1134380859@qq.com"
+  if (form.idOrEmail === '' || form.password === '') {
+    Snackbar.warning('请填写登录信息');
+  } else {
+    if (auth.value === 'user') {
+      post(
+        'user/login',
+        {
+          idOrEmail: form.idOrEmail,
+          password: form.password,
         },
         (message) => {
-            form.password = form.password + message.salt
-            console.log(form.password)
-            if (auth.value == 'user')
-            {
-                post('user/login', {
-                    idOrEmail: form.idOrEmail,
-                    password: form.password
-                }, (message) => {
-                    localStorage.setItem('token', message.token)
-                    router.push('/')
-                    Snackbar.success("登陆成功")
-                }, () => {
-                    Snackbar.error("用户不存在或密码错误")
-                })
-            } else if (auth.value == 'admin')
-            {
-                post('user/adminLogin', {
-                    account: form.idOrEmail,
-                    password: form.password
-                }, (message) => {
-                    console.log(message)
-                    localStorage.setItem('token', message.token)
-                    router.push('/')
-                    Snackbar.success("登陆成功")
-                }, () => {
-                    Snackbar.error("管理员不存在或密码错误")
-                })
-            }
-            },
-            () => {
-                Snackbar.error("出现异常错误")
-            }
-        )
+          localStorage.setItem('token', message.token);
+          router.push('/');
+          Snackbar.success("登陆成功");
+        },
+        () => {
+          Snackbar.error("用户不存在或密码错误");
+        }
+      );
+    } else if (auth.value === 'admin') {
+      post(
+        'user/adminLogin',
+        {
+          account: form.idOrEmail,
+          password: form.password,
+        },
+        (message) => {
+          console.log(message);
+          localStorage.setItem('token', message.token);
+          router.push('/');
+          Snackbar.success("登陆成功");
+        },
+        () => {
+          Snackbar.error("管理员不存在或密码错误");
+        }
+      );
+    } else {
+      Snackbar.error("出现异常错误");
     }
-}
+  }
+};
+
 
 function checkLogin(){
     //if (localStorage.getItem('token') != '') {
