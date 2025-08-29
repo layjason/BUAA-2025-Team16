@@ -5,54 +5,29 @@
       <!-- 左边栏（主要栏） -->
       <div class="left-column-3">
         <!-- 资源标题 -->
-        <div
-          class="left-panel-3 side-panel-3 panel-padding-3 glass shadow-act"
-          style="padding-top: 10px; padding-bottom: 10px"
-          title="资源标题"
-        >
+        <div class="left-panel-3 side-panel-3 panel-padding-3 glass shadow-act"
+          style="padding-top: 10px; padding-bottom: 10px" title="资源标题">
           <h1 v-if="!isEdting">{{ resData.title }}</h1>
-          <v-alert
-            v-if="isEdting && showTitleAlert"
-            variant="tonal"
-            type="error"
-            title="资源标题为空"
-            text="请输入资源标题"
-            style="padding-top: 12px; padding-bottom: 12px; margin-bottom: 10px"
-          />
-          <v-text-field
-            v-if="isEdting"
-            :loading="isSending"
-            :disabled="isSending"
-            v-model="newData.title"
-            label="资源标题"
-            variant="underlined"
-            hint="请输入新资源标题"
-          ></v-text-field>
+          <v-alert v-if="isEdting && showTitleAlert" variant="tonal" type="error" title="资源标题为空" text="请输入资源标题"
+            style="padding-top: 12px; padding-bottom: 12px; margin-bottom: 10px" />
+          <v-text-field v-if="isEdting" :loading="isSending" :disabled="isSending" v-model="newData.title" label="资源标题"
+            variant="underlined" hint="请输入新资源标题"></v-text-field>
         </div>
 
         <!-- 描述图片 -->
-        <div
-          class="left-panel-3 side-panel-3 panel-padding-3 glass shadow-act side-expand clickable"
-          style="display: flex; justify-content: center; overflow: hidden"
-          @click="showImagePreview = true"
-          title="点击以显示完整图片"
-        >
+        <div class="left-panel-3 side-panel-3 panel-padding-3 glass shadow-act side-expand clickable"
+          style="display: flex; justify-content: center; overflow: hidden" @click="showImagePreview = true"
+          title="点击以显示完整图片">
           <Image :src="resData.imgUrl" fit="contain" style="max-height: 60vh; min-height: 30px">
             <template #error>
-              <div
-                style="
+              <div style="
                   min-width: 100px;
                   display: flex;
                   justify-content: center;
                   flex-direction: column;
                   text-align: center;
-                "
-              >
-                <v-icon
-                  icon="mdi-image-broken-variant"
-                  size="large"
-                  style="width: 100%; margin-top: 5px"
-                />
+                ">
+                <v-icon icon="mdi-image-broken-variant" size="large" style="width: 100%; margin-top: 5px" />
                 <p width="90%">图片显示失败</p>
               </div>
             </template>
@@ -65,26 +40,10 @@
             {{ resData.description }}
           </p>
 
-          <v-alert
-            v-if="isEdting && showTextAlert"
-            variant="tonal"
-            type="error"
-            title="资源描述为空"
-            text="请输入资源描述"
-            style="padding-top: 12px; padding-bottom: 12px; margin-bottom: 10px"
-          />
-          <Input
-            v-if="isEdting"
-            v-model="newData.description"
-            :disabled="isSending"
-            type="textarea"
-            :border="false"
-            placeholder="请输入资源描述..."
-            :autosize="{ minRows: 10 }"
-            show-word-limit
-            maxlength="500"
-            title="修改教育资源描述"
-          />
+          <v-alert v-if="isEdting && showTextAlert" variant="tonal" type="error" title="资源描述为空" text="请输入资源描述"
+            style="padding-top: 12px; padding-bottom: 12px; margin-bottom: 10px" />
+          <Input v-if="isEdting" v-model="newData.description" :disabled="isSending" type="textarea" :border="false"
+            placeholder="请输入资源描述..." :autosize="{ minRows: 10 }" show-word-limit maxlength="500" title="修改教育资源描述" />
         </div>
       </div>
 
@@ -92,19 +51,12 @@
       <div class="right-column-3">
         <Affix :offset-top="10" style="margin-top: 10px; margin-bottom: 20px">
           <!-- 来自于 -->
-          <div
-            class="right-panel-3 side-panel-3 panel-padding-3 glass shadow-act top-panel"
-            style="margin-top: 0px"
-            title="资源上传用户"
-          >
+          <div class="right-panel-3 side-panel-3 panel-padding-3 glass shadow-act top-panel" style="margin-top: 0px"
+            title="资源上传用户">
             <!-- 头像栏 -->
             <div style="display: flex; flex-direction: row; align-items: center">
-              <Avatar
-                @click="jumpToUser(resData.userId)"
-                size="large"
-                style="margin-right: 10px"
-                :src="resData.userAvatarUrl"
-              />
+              <Avatar @click="jumpToUser(resData.userId)" size="large" style="margin-right: 10px"
+                :src="resData.userAvatarUrl" />
               <!-- 用户名和id -->
               <div>
                 <h3 class="small-title-dark title-break" style="max-width: 250px">
@@ -114,15 +66,12 @@
               </div>
             </div>
             <!-- 发布时间栏 -->
-            <div
-              style="
+            <div style="
                 display: flex;
                 flex-direction: row;
                 justify-content: space-between;
                 margin-top: 15px;
-              "
-              class="title-small-dark"
-            >
+              " class="title-small-dark">
               <div style="text-align: left">发布于</div>
               <!-- <div style="text-align: center;">|</div> -->
               <div style="text-align: right">{{ resData.uploadTime }}</div>
@@ -130,47 +79,22 @@
           </div>
 
           <!-- 频道与类别 -->
-          <div
-            class="right-panel-3 side-panel-3 panel-padding-3 glass shadow-act"
-            title="当前资源所属的频道和包含的资源种类"
-          >
+          <div class="right-panel-3 side-panel-3 panel-padding-3 glass shadow-act" title="当前资源所属的频道和包含的资源种类">
             <div>
-              <v-chip
-                v-if="!isEdting"
-                variant="outlined"
-                :title="'当前资源属于' + channelMapping[resData.channel] + '频道'"
-                >{{ channelMapping[resData.channel] }}</v-chip
-              >
-              <v-chip-group
-                v-if="isEdting"
-                :disabled="isSending"
-                v-model="newData.channel"
-                column
-                mandatory
-                title="修改资源所属的频道"
-              >
+              <v-chip v-if="!isEdting" variant="outlined" :title="'当前资源属于' + channelMapping[resData.channel] + '频道'">{{
+                channelMapping[resData.channel] }}</v-chip>
+              <v-chip-group v-if="isEdting" :disabled="isSending" v-model="newData.channel" column mandatory
+                title="修改资源所属的频道">
                 <v-chip variant="outlined" filter v-for="t in fullChannelGroup">{{ t }}</v-chip>
               </v-chip-group>
             </div>
             <div style="margin-top: 10px">
-              <v-chip
-                v-if="!isEdting"
-                variant="tonal"
-                v-for="type in convertNumbersToTypes(resData.type)"
-                style="margin-right: 5px"
-                :title="'当前资源包含类型为' + type + '的内容'"
-              >
+              <v-chip v-if="!isEdting" variant="tonal" v-for="type in convertNumbersToTypes(resData.type)"
+                style="margin-right: 5px" :title="'当前资源包含类型为' + type + '的内容'">
                 {{ type }}
               </v-chip>
-              <v-chip-group
-                v-if="isEdting"
-                :disabled="isSending"
-                v-model="newData.type"
-                column
-                mandatory
-                multiple
-                title="修改资源包含的文件类型"
-              >
+              <v-chip-group v-if="isEdting" :disabled="isSending" v-model="newData.type" column mandatory multiple
+                title="修改资源包含的文件类型">
                 <v-chip variant="tonal" filter v-for="t in fullTypeGroup">{{ t }}</v-chip>
               </v-chip-group>
             </div>
@@ -179,19 +103,13 @@
           <!-- 下载栏 -->
           <div class="right-panel-3 side-panel-3 panel-padding-3 glass shadow-act side-expand">
             <!-- 下载量统计 -->
-            <div
-              style="display: flex; flex-direction: row; justify-content: space-between"
-              class="title-small-dark"
-            >
+            <div style="display: flex; flex-direction: row; justify-content: space-between" class="title-small-dark">
               <div style="text-align: left">当前下载量</div>
               <!-- <div style="text-align: center;">|</div> -->
               <div style="text-align: right">{{ resData.downloadCnt }}</div>
             </div>
             <!-- 文件名 -->
-            <div
-              style="display: flex; flex-direction: row; justify-content: space-between"
-              class="title-small-dark"
-            >
+            <div style="display: flex; flex-direction: row; justify-content: space-between" class="title-small-dark">
               <div style="text-align: left">文件名</div>
               <!-- <div style="text-align: center;">|</div> -->
               <div style="text-align: right; max-width: 70%" class="title-break">
@@ -199,85 +117,32 @@
               </div>
             </div>
             <!-- 文件大小 -->
-            <div
-              style="display: flex; flex-direction: row; justify-content: space-between"
-              class="title-small-dark"
-            >
+            <div style="display: flex; flex-direction: row; justify-content: space-between" class="title-small-dark">
               <div style="text-align: left">文件大小</div>
               <!-- <div style="text-align: center;">|</div> -->
               <div style="text-align: right">{{ resData.fileSize + '字节' }}</div>
             </div>
-            <v-btn
-              :disabled="isEdting || !resData.canDownload"
-              :loading="isTryingDownload"
-              variant="tonal"
-              color="green"
-              style="margin-top: 10px; width: 100%"
-              title="下载资源"
-              @click="tryDownload"
-              >下载资源</v-btn
-            >
+            <v-btn :disabled="isEdting || !resData.canDownload" :loading="isTryingDownload" variant="tonal"
+              color="green" style="margin-top: 10px; width: 100%" title="下载资源" @click="tryDownload">下载资源</v-btn>
           </div>
 
           <!-- 删除与编辑框 -->
-          <div
-            class="right-panel-3 side-panel-3 panel-padding-3 glass shadow-act side-expand"
-            v-if="resData.canModify || resData.canDelete"
-            title="操作当前教育资源"
-          >
+          <div class="right-panel-3 side-panel-3 panel-padding-3 glass shadow-act side-expand"
+            v-if="resData.canModify || resData.canDelete" title="操作当前教育资源">
             <div style="display: flex; flex-direction: row">
               <!-- 未进入编辑状态的按钮组 -->
-              <v-btn
-                v-if="!isEdting"
-                :disabled="!resData.canModify"
-                variant="tonal"
-                color="orange"
-                style="flex: 1; margin-right: 5px"
-                title="编辑教育资源"
-                @click="isEdting = true"
-                >编辑</v-btn
-              >
-              <v-btn
-                v-if="!isEdting"
-                :disabled="!resData.canDelete"
-                variant="flat"
-                color="red"
-                style="flex: 1; margin-left: 5px"
-                title="删除教育资源"
-                @click="clickDelete"
-                >删除</v-btn
-              >
+              <v-btn v-if="!isEdting" :disabled="!resData.canModify" variant="tonal" color="orange"
+                style="flex: 1; margin-right: 5px" title="编辑教育资源" @click="isEdting = true">编辑</v-btn>
+              <v-btn v-if="!isEdting" :disabled="!resData.canDelete" variant="flat" color="red"
+                style="flex: 1; margin-left: 5px" title="删除教育资源" @click="clickDelete">删除</v-btn>
               <!-- 进入编辑状态的按钮组 -->
-              <v-btn
-                v-if="isEdting"
-                :disabled="isSending"
-                variant="outlined"
-                color="red"
-                style="flex: 1; margin-right: 5px"
-                title="取消编辑"
-                @click="isEdting = false"
-                >取消</v-btn
-              >
-              <v-btn
-                v-if="isEdting"
-                :disabled="isSending"
-                variant="tonal"
-                color="#0e7bff"
-                style="flex: 1; margin-left: 5px; margin-right: 3px"
-                title="将待编辑内容重置为原内容"
-                @click="resetNewData"
-                >重置</v-btn
-              >
-              <v-btn
-                v-if="isEdting"
-                :loading="isSending"
-                variant="flat"
-                color="green"
-                style="flex: 1; margin-left: 5px"
-                title="提交编辑"
-                @click="tryModify"
-                >提交</v-btn
-              >
+              <v-btn v-if="isEdting" :disabled="isSending" variant="outlined" color="red"
+                style="flex: 1; margin-right: 5px" title="取消编辑" @click="isEdting = false">取消</v-btn>
+              <v-btn v-if="isEdting" :disabled="isSending" variant="tonal" color="#0e7bff"
+                style="flex: 1; margin-left: 5px; margin-right: 3px" title="将待编辑内容重置为原内容"
+                @click="resetNewData">重置</v-btn>
+              <v-btn v-if="isEdting" :loading="isSending" variant="flat" color="green" style="flex: 1; margin-left: 5px"
+                title="提交编辑" @click="tryModify">提交</v-btn>
             </div>
           </div>
         </Affix>
@@ -289,27 +154,13 @@
           <!-- 标题 -->
           <div class="title-dark">是否确认删除资源？</div>
           <div class="text-large-dark" style="margin-top: 8px">
-            您正在删除资源：<span style="font-weight: bolder">{{ resData.title }}</span
-            >。是否继续？
+            您正在删除资源：<span style="font-weight: bolder">{{ resData.title }}</span>。是否继续？
           </div>
           <div style="display: flex; flex-direction: row; justify-content: end; margin-top: 15px">
-            <v-btn
-              variant="tonal"
-              :disabled="isDeleting"
-              style="margin-right: 5px"
-              title="取消"
-              @click.stop="showDelete = false"
-              >取消</v-btn
-            >
-            <v-btn
-              variant="flat"
-              :loading="isDeleting"
-              color="red"
-              style="margin-left: 5px"
-              @click.stop="tryDelete"
-              title="删除资源"
-              >确认删除</v-btn
-            >
+            <v-btn variant="tonal" :disabled="isDeleting" style="margin-right: 5px" title="取消"
+              @click.stop="showDelete = false">取消</v-btn>
+            <v-btn variant="flat" :loading="isDeleting" color="red" style="margin-left: 5px" @click.stop="tryDelete"
+              title="删除资源">确认删除</v-btn>
           </div>
         </div>
       </div>
@@ -394,13 +245,13 @@ function convertNumbersToTypes(numbers) {
 // }
 
 watch(
-    () => route.params.resId,
-    (newVal) => {
-      if (newVal) {
-        updateData()
-      }
+  () => route.params.resId,
+  (newVal) => {
+    if (newVal) {
+      updateData()
     }
-  )
+  }
+)
 
 const isEdting = ref(false)
 const isSending = ref(false)
@@ -576,7 +427,7 @@ const tryModify = async () => {
     return
   }
 
-  
+
 
   isSending.value = true
   await put(
@@ -606,39 +457,52 @@ const updateData = async () => {
     const resId = props.resId ?? Number(route.params.resId);
     if (!resId) return;
 
-    // Use post with callbacks, wrapped in a Promise for await
-    await new Promise((resolve, reject) => {
-      post('/resource/getResDetail', { resourceId: resId }, (resp) => {
-        const message = resp.message; // Assuming post's success callback gets { message: { ... } }
-        resData.value = {
-          title: message.title,
-          description: message.content,
-          imgUrl: message.imageUrl,
-          userName: message.username,
-          userAvatarUrl: message.profilePhotoUrl,
-          userId: message.userId,
-          uploadTime: message.publishTime || '未知',
-          channel: message.subject,
-          type: Array.isArray(message.categories) ? message.categories : [],
-          downloadCnt: message.downloadCount,
-          fileSize: message.size,
-          fileName: message.fileName,
-          canDelete: message.canDelete,
-          canModify: message.canModify,
-          canDownload: message.canDownload
-        }
-        resetNewData()
-        resolve();
-      }, (errorMsg, status) => { // Optional failure callback
-        Snackbar.error(`获取资源详情失败: ${errorMsg} (状态: ${status})`);
-        reject(new Error(`Error: ${errorMsg}, Status: ${status}`));
-      })
+    // 调用 post 请求获取资源详情
+    const resp = await new Promise((resolve, reject) => {
+      post(
+        '/resource/getResDetail',
+        { resourceId: resId },
+        (data) => resolve(data), // data 就是 resourceDetail
+        (errorMsg, status) => reject(new Error(`Error: ${errorMsg}, Status: ${status}`))
+      );
     });
+
+    console.log('resp', resp);
+
+    if (!resp) { // 直接判断 resp
+      Snackbar.error('获取资源详情失败: 返回数据为空');
+      resData.value = failData;
+      return;
+    }
+
+    // 安全赋值，保证页面渲染不会报错
+    resData.value = {
+      title: resp.title ?? '未知标题',
+      description: resp.content ?? '暂无描述',
+      imgUrl: resp.imageUrl ?? '',
+      userName: resp.username ?? '匿名',
+      userAvatarUrl: resp.profilePhotoUrl ?? '',
+      userId: resp.userId ?? 0,
+      uploadTime: resp.publishTime ?? '未知',
+      channel: resp.subject ?? '未知',
+      type: Array.isArray(resp.categories) ? resp.categories : [],
+      downloadCnt: resp.downloadCount ?? 0,
+      fileSize: resp.size ?? 0,
+      fileName: resp.fileName ?? '',
+      canDelete: resp.canDelete ?? false,
+      canModify: resp.canModify ?? false,
+      canDownload: resp.canDownload ?? false
+    };
+
+    resetNewData(); // 如果你有额外的初始化操作
   } catch (e) {
-    console.error(e)
-    resData.value = failData
+    console.error(e);
+    Snackbar.error('获取资源详情失败，请重试');
+    resData.value = failData;
   }
-}
+};
+
+
 
 function jumpToUser(userId) {
   if (userId > 0) {
@@ -648,7 +512,7 @@ function jumpToUser(userId) {
 }
 
 updateData()
-    
+
 const showTitleAlert = ref(false)
 
 const showTextAlert = ref(false)
