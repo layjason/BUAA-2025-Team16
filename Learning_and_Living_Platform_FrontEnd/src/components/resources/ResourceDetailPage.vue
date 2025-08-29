@@ -606,39 +606,42 @@ const updateData = async () => {
     const resId = props.resId ?? Number(route.params.resId);
     if (!resId) return;
 
-    // Use post with callbacks, wrapped in a Promise for await
-    await new Promise((resolve, reject) => {
-      post('/resource/getResDetail', { resourceId: resId }, (resp) => {
-        const message = resp.message; // Assuming post's success callback gets { message: { ... } }
-        resData.value = {
-          title: message.title,
-          description: message.content,
-          imgUrl: message.imageUrl,
-          userName: message.username,
-          userAvatarUrl: message.profilePhotoUrl,
-          userId: message.userId,
-          uploadTime: message.publishTime || '未知',
-          channel: message.subject,
-          type: Array.isArray(message.categories) ? message.categories : [],
-          downloadCnt: message.downloadCount,
-          fileSize: message.size,
-          fileName: message.fileName,
-          canDelete: message.canDelete,
-          canModify: message.canModify,
-          canDownload: message.canDownload
-        }
-        resetNewData()
-        resolve();
-      }, (errorMsg, status) => { // Optional failure callback
-        Snackbar.error(`获取资源详情失败: ${errorMsg} (状态: ${status})`);
-        reject(new Error(`Error: ${errorMsg}, Status: ${status}`));
-      })
-    });
+    const { data } = await axios.post(
+      'http://localhost:8080/resource/getResDetail',
+      { resourceId: resId },
+      { headers: { 'Content-Type': 'application/json' } }
+    );
+
+    if (!data?.success || !data?.message) {
+      throw new Error(data?.message ?? 'Request failed');
+    }
+
+    const message = data.message;
+
+    resData.value = {
+      title: message.title,
+      description: message.content,
+      imgUrl: message.imageUrl,
+      userName: message.username,
+      userAvatarUrl: message.profilePhotoUrl,
+      userId: message.userId,
+      uploadTime: message.publishTime || '未知',
+      channel: message.subject,
+      type: Array.isArray(message.categories) ? message.categories : [],
+      downloadCnt: message.downloadCount,
+      fileSize: message.size,
+      fileName: message.fileName,
+      canDelete: message.canDelete,
+      canModify: message.canModify,
+      canDownload: message.canDownload,
+    };
+
+    resetNewData();
   } catch (e) {
-    console.error(e)
-    resData.value = failData
+    console.error(e);
+    resData.value = failData;
   }
-}
+};
 
 function jumpToUser(userId) {
   if (userId > 0) {

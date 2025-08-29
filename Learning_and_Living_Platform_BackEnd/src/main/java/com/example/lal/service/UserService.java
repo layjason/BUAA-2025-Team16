@@ -31,9 +31,6 @@ public interface UserService {
 
     boolean deleteAccount(String id);
 
-    String getUserSalt(String idOrEmail);
-    String getAdminSalt(String idOrEmail);
-
     Admin getAdminByEmail(String email);
 
 

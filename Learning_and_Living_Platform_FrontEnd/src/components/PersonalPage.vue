@@ -654,27 +654,27 @@ const passRules = {
 function confirmEditPass() {
   editPassRef.value.validate((valid) => {
     if (valid) {
-      post('user/getSalt', {
-        idOrEmail: formData.id
-      },
-        (message) => {
-          put("/user/updatePwd",
-            {
-              userId: formData.id,
-              oldPassword: pass.oldPass,
-              newPassword: pass.newPass
-            },
-            () => {
-              Snackbar.success("更新成功")
-              isPassword.value = false
-            })
+      put(
+        "/user/updatePwd",
+        {
+          userId: formData.id,
+          oldPassword: pass.oldPass,
+          newPassword: pass.newPass,
         },
-      )
+        () => {
+          Snackbar.success("更新成功");
+          isPassword.value = false;
+        },
+        () => {
+          Snackbar.error("更新失败!");
+        }
+      );
     } else {
-      Snackbar.error("请正确填写密码!")
+      Snackbar.error("请正确填写密码!");
     }
-  })
+  });
 }
+
 
 function cancelEditPass() {
   isPassword.value = false

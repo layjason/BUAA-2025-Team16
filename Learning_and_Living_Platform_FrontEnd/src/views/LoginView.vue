@@ -78,13 +78,6 @@ const login = () => {
         Snackbar.warning('请填写登录信息')
     } else 
     {
-        console.log({idOrEmail: form.idOrEmail})
-        get('user/getSalt', {
-            idOrEmail: "1134380859@qq.com"
-        },
-        (message) => {
-            form.password = form.password + message.salt
-            console.log(form.password)
             if (auth.value == 'user')
             {
                 post('user/login', {

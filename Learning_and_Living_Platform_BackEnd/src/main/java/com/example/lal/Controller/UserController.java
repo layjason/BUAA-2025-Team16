@@ -73,8 +73,6 @@ public class UserController {
         //检查用户登入信息，调用verifyUserLoginService, addLog
         System.out.println("adminLogin 调用成功");
         String password = verifyAdminLoginRequest.getPassword();
-        password = saltEncryption(password,userService.getAdminSalt(verifyAdminLoginRequest.getAccount()));
-        //password = saltEncryption(password,userService.getAdminSalt(verifyAdminLoginRequest.getAccount()));
         System.out.println("此用户的password(加密后)是:"+password);
         verifyAdminLoginRequest.setPassword(password);
         try{
@@ -99,20 +97,6 @@ public class UserController {
             //throw new UserException("用户不存在或密码错误");
             return RestBean.failure(400,"用户不存在或密码错误2");
         }
-    }
-    @PostMapping("/getSalt")
-    public ResponseEntity<RestBean> getSalt(@RequestBody GetSaltRequest getSaltRequest, HttpServletRequest request){
-        //检查用户登入信息，调用verifyUserLoginService, addLog, changeExp(成功登入加积分)
-        String idOrEmail = getSaltRequest.getIdOrEmail();
-        System.out.println("getSalt方法调用成功：传进来的idOrEmail是:"+idOrEmail);
-        String userSalt = userService.getUserSalt(idOrEmail);
-        String adminSalt = userService.getAdminSalt(idOrEmail);
-        //随机生成一个字符串作为盐值，限制长度<=20
-        String randomString = UUID.randomUUID().toString();
-        randomString = randomString.replace("-", ""); // 去除字符串中的横线
-        if(randomString.length()>20)randomString = randomString.substring(0,20);
-        if(userSalt == null&&adminSalt == null) return RestBean.success(randomString);
-        return RestBean.success(Objects.requireNonNullElse(userSalt, adminSalt));
     }
 
     @GetMapping("/getLevel")
@@ -213,8 +197,6 @@ public class UserController {
         System.out.println("register 调用成功");
         try{
             String password = verifyRegisterRequest.getPassword();
-            String salt = verifyRegisterRequest.getSalt();
-            password = saltEncryption(password,salt);
             verifyRegisterRequest.setPassword(password);
             String userId = userService.addUser(verifyRegisterRequest);
             return RestBean.success("注册成功");
@@ -385,10 +367,6 @@ public class UserController {
         String oldPassword = updatePasswordRequest.getOldPassword();
         String newPassword = updatePasswordRequest.getNewPassword();
         System.out.println(id);
-        String salt = userService.getUserSalt(updatePasswordRequest.getUserId());
-        System.out.println("salt is "+salt);
-        oldPassword = saltEncryption(oldPassword, salt);
-        newPassword = saltEncryption(newPassword,salt);
         int idInt = Integer.parseInt(id);
         if(idInt<10000000){
             userService.updatePassword(updatePasswordRequest.getUserId(), newPassword);
@@ -422,7 +400,5 @@ public class UserController {
         }
         return RestBean.success("删除成功");
     }
-    public static String saltEncryption(String password, String salt){
-        return password;
-    }
+
 }

@@ -40,6 +40,7 @@ com/example/lal/model/entity/ResourceCategoryEntry.class
 com/example/lal/model/exceptions/ServiceException.class
 com/example/lal/model/request/user/UpdatePasswordRequest.class
 com/example/lal/service/ExperienceService.class
+com/example/lal/config/WebCorsConfig.class
 com/example/lal/model/entity/HotPostStatistic.class
 com/example/lal/model/request/user/GetOtherUserInfoRequest.class
 com/example/lal/model/exceptions/LogException.class
@@ -102,7 +103,6 @@ com/example/lal/service/UserService.class
 com/example/lal/LalApplication.class
 com/example/lal/Controller/PostController.class
 com/example/lal/service/impl/LogServiceImpl.class
-com/example/lal/config/WebConfig.class
 com/example/lal/model/request/user/GetPasswordRequest.class
 com/example/lal/model/RestBean.class
 com/example/lal/model/exceptions/PostException.class

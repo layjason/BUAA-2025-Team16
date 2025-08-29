@@ -26,14 +26,6 @@ public class UserServiceImpl implements UserService {
     //@Autowired
     //private Page<UserDetail> userDetailPage;
     @Override
-    public String getUserSalt(String idOrEmail){
-        return userMapper.getUserSaltByIdOrEmail(idOrEmail);
-    }
-    @Override
-    public String getAdminSalt(String idOrEmail){
-        return adminMapper.getAdminSaltByIdOrEmail(idOrEmail);
-    }
-    @Override
     public Admin getAdminByEmail(String email){
         return adminMapper.getAdminByEmail(email);
     }

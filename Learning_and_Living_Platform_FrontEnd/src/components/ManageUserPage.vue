@@ -260,32 +260,28 @@ function handlePass(row) {
 }
 
 function ConfirmEditPass() {
-    editPassref.value.validate((valid) => {
-        if (valid) {
-            post('user/getSalt', {
-                idOrEmail: editPassForm.userId
-            },
-                (message) => {
-                    put('user/updatePwd',
-                        {
-                            userId: editPassForm.userId,
-                            newPassword: editPassForm.newPassword
-                        },
-                        () => { Snackbar.success("修改成功") },
-                        () => { Snackbar.success("修改失败!") }
-                        )
-                    editPassForm.userId = ''
-                    editPassForm.newPassword = ''
-                    editPassModal.value = false
-                },
-                () => {
-                    Snackbar.success("修改失败!")
-                }
-            )
-        } else {
-            Snackbar.error("您输入的密码不符合格式！")
+  editPassref.value.validate((valid) => {
+    if (valid) {
+      put(
+        '/user/updatePwd',   // add leading slash if using proxy
+        {
+          userId: editPassForm.userId,
+          newPassword: editPassForm.newPassword,
+        },
+        () => {
+          Snackbar.success("修改成功");
+          editPassForm.userId = '';
+          editPassForm.newPassword = '';
+          editPassModal.value = false;
+        },
+        () => {
+          Snackbar.error("修改失败!");
         }
-    })
+      );
+    } else {
+      Snackbar.error("您输入的密码不符合格式！");
+    }
+  });
 }
 
 function cancelEditPass() {
@@ -339,7 +335,6 @@ const registerForm = reactive({
     email: '',
     password: '',
     password_repeat: '',
-    salt:''
 })
 
 function checkMail(email) {
@@ -377,14 +372,10 @@ function cancelAdd() {
 
 function register() {
     if (checkRegister()) {
-        var t = "ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz2345678"
-        var a = t.length
-        var salt = ""
-        for (var i = 0; i < 20; i++) salt += t.charAt(Math.floor(Math.random() * a))
+   
         post("user/register", {
         email: registerForm.email,
-        password: sha256(registerForm.password+salt),
-        salt: salt
+        password: sha256(registerForm.password),
         }, 
         () => {
             Snackbar.success("添加成功!")
