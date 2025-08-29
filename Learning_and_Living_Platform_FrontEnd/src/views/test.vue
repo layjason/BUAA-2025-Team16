@@ -65,36 +65,30 @@ const login = () => {
     Snackbar.warning('请填写登录信息')
   } else {
     console.log({ idOrEmail: form.idOrEmail })
-
-        if (auth.value == 'user') {
-          post('user/login', {
-            idOrEmail: form.idOrEmail,
-            password: form.password
-          }, (message) => {
-            localStorage.setItem('token', message.token)
-            router.push('/')
-            Snackbar.success("登陆成功")
-          }, () => {
-            Snackbar.error("用户不存在或密码错误")
-          })
-        } else if (auth.value == 'admin') {
-          post('user/adminLogin', {
-            account: form.idOrEmail,
-            password: form.password
-          }, (message) => {
-            console.log(message)
-            localStorage.setItem('token', message.token)
-            router.push('/')
-            Snackbar.success("登陆成功")
-          }, () => {
-            Snackbar.error("管理员不存在或密码错误")
-          })
-        }
-      },
-      () => {
-        Snackbar.error("出现异常错误")
-      }
-    )
+    if (auth.value == 'user') {
+      post('user/login', {
+        idOrEmail: form.idOrEmail,
+        password: form.password
+      }, (message) => {
+        localStorage.setItem('token', message.token)
+        router.push('/')
+        Snackbar.success("登陆成功")
+      }, () => {
+        Snackbar.error("用户不存在或密码错误")
+      })
+    } else if (auth.value == 'admin') {
+      post('user/adminLogin', {
+        account: form.idOrEmail,
+        password: form.password
+      }, (message) => {
+        console.log(message)
+        localStorage.setItem('token', message.token)
+        router.push('/')
+        Snackbar.success("登陆成功")
+      }, () => {
+        Snackbar.error("管理员不存在或密码错误")
+      })
+    }
   }
 }
 

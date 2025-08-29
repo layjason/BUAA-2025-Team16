@@ -21,5 +21,5 @@ export default defineConfig({
       // Optionally keep '/download' if used for direct file downloads:
       // '/download': { target: 'http://localhost:8080', changeOrigin: true },
     }
-  }
+  } 
 })
