@@ -1,0 +1,69 @@
+/* 单行文本截断 */
+.title-break {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    word-break: break-all;
+}
+
+.title-break-5 {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 5;
+    -webkit-box-orient: vertical;
+    word-break: break-all;
+}
+
+
+.title-dark {
+    font-size: 22px;
+    font-weight: bolder;
+    color: #515A6E;
+}
+.title-light {
+    font-size: 22px;
+    font-weight: bolder;
+    color: #dfdfdf;
+}
+
+.small-title-dark {
+    font-size: 18px;
+    font-weight: normal;
+    color: #515A6E;
+}
+.small-title-light {
+    font-size: 18px;
+    font-weight: normal;
+    color: #dfdfdf;
+}
+
+.text-large-dark {
+    font-size: 16px;
+    font-weight: normal;
+    color: #515A6E;  
+}
+
+.text-dark {
+    font-size: 14px;
+    font-weight: normal;
+    color: #515A6E;    
+}
+.text-light {
+    font-size: 14px;
+    font-weight: normal;
+    color: #dfdfdf;   
+}
+
+.small-text-dark {
+    font-size: 12px;
+    font-weight: lighter;
+    color: #606060;    
+}
+.small-text-light {
+    font-size: 12px;
+    font-weight: lighter;
+    color: #cfcfcf;    
+}

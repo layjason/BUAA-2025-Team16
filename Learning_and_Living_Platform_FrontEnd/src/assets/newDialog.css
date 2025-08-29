@@ -1,0 +1,61 @@
+/* 用于处理对话框的弹出层 */
+.overlay{
+    backdrop-filter: blur(5px);
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* 用于处理弹出对话框 */
+.dialog-container{
+    display: flex;
+    justify-content: center;
+}
+.dialog{
+    background-color: rgba(255, 255, 255, 0.8);
+    padding-left: 30px;
+    padding-right: 30px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    border-radius: 10px;
+    width: 45%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.form-row{
+    margin-top: 10px;
+    margin-bottom: 10px;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+}
+
+.form-title{
+    flex: 1;
+    margin-right: 6px;
+    text-align: end;
+    margin-top: 5px;
+    font-size: 15px;
+}
+
+.form-content{
+    flex: 5;
+    text-align: start;
+    margin-left: 6px;
+    margin-right: 7%;
+}
+
+/* .form-row{
+    margin-top: 15px;
+    margin-bottom: 15px;
+    width: 100%;
+}
+
+.form-title{
+    font-size: 15px;
+    width: 100%;
+}
+
+.form-content{
+    width: 100%;
+} */

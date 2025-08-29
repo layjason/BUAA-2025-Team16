@@ -1,0 +1,49 @@
+/* 用于处理阴影 */
+.shadow-act{
+    box-shadow: 2px 2px 5px #3e3e3e;
+}
+
+.shadow-act:hover{
+    box-shadow: 5px 5px 15px #3e3e3e;
+}
+
+.shadow-static{
+    box-shadow: 2px 2px 5px #3e3e3e;
+}
+
+.side-expand{
+    transition-property: margin-bottom, margin-top, box-shadow;
+    transition-duration: 0.2s;
+    transition-timing-function: linear;
+}
+
+.side-expand:hover{
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+/* 
+用于实现毛玻璃效果 */
+.glass {
+    backdrop-filter: blur(5px);
+    background-color: rgba(255, 255, 255, 0.7);
+}
+
+.glass:hover{
+    background-color: rgba(255, 255, 255, 0.9);
+}
+
+
+.disable-glass{
+    backdrop-filter: blur(5px);
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+.glass-light{
+    backdrop-filter: blur(5px);
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+.glass-light:hover{
+    background-color: rgba(255, 255, 255, 0.8);
+}
