@@ -17,10 +17,7 @@ import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 
 @Service
@@ -81,13 +78,18 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostDetail getPost(int postId) throws PostException{
-        PostDetail postDetail = new PostDetail();
-        postDetail = postMapper.readPost(postId);
-        if(postDetail.getImageurls() != null){
-            postDetail.setImageUrlList(Arrays.asList(postDetail.getImageurls().split(",")));
+    public PostDetail getPost(int postId) throws PostException {
+        PostDetail postDetail = postMapper.readPost(postId);
+        if (postDetail == null) {
+            throw new PostException("Post not found, Id: " + postId);
         }
-        postDetail.setHotPoint(postDetail.getLikeCount()* 10L +postDetail.getBrowseCount());
+        String imageUrlsStr = postDetail.getImageurls();
+        if (imageUrlsStr != null && !imageUrlsStr.isEmpty()) {
+            postDetail.setImageUrlList(Arrays.asList(imageUrlsStr.split(",")));
+        } else {
+            postDetail.setImageUrlList(Collections.emptyList());  // Or new ArrayList<>()
+        }
+        postDetail.setHotPoint(postDetail.getLikeCount() * 10L + postDetail.getBrowseCount());
         return postDetail;
     }
 
