@@ -84,7 +84,10 @@ public class PostServiceImpl implements PostService {
     public PostDetail getPost(int postId) throws PostException{
         PostDetail postDetail = new PostDetail();
         postDetail = postMapper.readPost(postId);
-        if(postDetail.getImageurls() != null){
+        if(postDetail == null){
+            throw new PostException("Post not found, Id: "+postId);
+        }
+        else{
             postDetail.setImageUrlList(Arrays.asList(postDetail.getImageurls().split(",")));
         }
         postDetail.setHotPoint(postDetail.getLikeCount()* 10L +postDetail.getBrowseCount());
