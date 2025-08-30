@@ -10,6 +10,7 @@ import com.example.lal.model.exceptions.ReplyException;
 import com.example.lal.model.request.post.*;
 import com.example.lal.service.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.ServletException;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,11 +21,13 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.util.NestedServletException;
 
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -45,7 +48,21 @@ class PostControllerTest {
     @MockBean private ReplyService replyService;
     @MockBean private UserService userService;
     @MockBean private ExperienceService experienceService;
-    @MockBean private ExamineService examineService;
+    @MockBean private ExamineService examineService; // Instance, but TextCensor is static, so we'll use MockedStatic for it
+
+    private void setupJwtMock(MockedStatic<JwtUtil> mockedStatic) {
+        DecodedJWT mockedJWT = mock(DecodedJWT.class);
+        Claim mockedUserIdClaim = mock(Claim.class);
+        when(mockedJWT.getClaim("userId")).thenReturn(mockedUserIdClaim);
+        when(mockedUserIdClaim.asString()).thenReturn("10000001");
+        when(mockedJWT.getIssuer()).thenReturn("yourExpectedIssuer");
+        when(mockedJWT.getAudience()).thenReturn(List.of("yourExpectedAudience"));
+        when(mockedJWT.getExpiresAt()).thenReturn(new Date(System.currentTimeMillis() + 3600000));
+        when(mockedJWT.getIssuedAt()).thenReturn(new Date(System.currentTimeMillis() - 3600000));
+
+        mockedStatic.when(() -> JwtUtil.verifyToken("mock-token")).thenReturn(mockedJWT);
+        mockedStatic.when(() -> JwtUtil.getUserId("mock-token")).thenReturn("10000001");
+    }
 
     @Test
     void uploadImage_positive_successfulUpload() throws Exception {
@@ -53,17 +70,7 @@ class PostControllerTest {
         when(ossService.uploadFile(any(MultipartFile.class), eq("0"))).thenReturn("/path/test.jpg");
 
         try (MockedStatic<JwtUtil> mockedStatic = mockStatic(JwtUtil.class)) {
-            DecodedJWT mockedJWT = mock(DecodedJWT.class);
-            Claim mockedUserIdClaim = mock(Claim.class);
-            when(mockedJWT.getClaim("userId")).thenReturn(mockedUserIdClaim);
-            when(mockedUserIdClaim.asString()).thenReturn("10000001");
-            when(mockedJWT.getIssuer()).thenReturn("yourExpectedIssuer");
-            when(mockedJWT.getAudience()).thenReturn(List.of("yourExpectedAudience"));
-            when(mockedJWT.getExpiresAt()).thenReturn(new Date(System.currentTimeMillis() + 3600000));
-            when(mockedJWT.getIssuedAt()).thenReturn(new Date(System.currentTimeMillis() - 3600000));
-
-            mockedStatic.when(() -> JwtUtil.verifyToken("mock-token")).thenReturn(mockedJWT);
-            mockedStatic.when(() -> JwtUtil.getUserId("mock-token")).thenReturn("10000001");
+            setupJwtMock(mockedStatic);
 
             mockMvc.perform(multipart("/post/uploadImage")
                             .file(file)
@@ -80,17 +87,7 @@ class PostControllerTest {
         MockMultipartFile emptyFile = new MockMultipartFile("file", "", "image/jpeg", new byte[0]);
 
         try (MockedStatic<JwtUtil> mockedStatic = mockStatic(JwtUtil.class)) {
-            DecodedJWT mockedJWT = mock(DecodedJWT.class);
-            Claim mockedUserIdClaim = mock(Claim.class);
-            when(mockedJWT.getClaim("userId")).thenReturn(mockedUserIdClaim);
-            when(mockedUserIdClaim.asString()).thenReturn("10000001");
-            when(mockedJWT.getIssuer()).thenReturn("yourExpectedIssuer");
-            when(mockedJWT.getAudience()).thenReturn(List.of("yourExpectedAudience"));
-            when(mockedJWT.getExpiresAt()).thenReturn(new Date(System.currentTimeMillis() + 3600000));
-            when(mockedJWT.getIssuedAt()).thenReturn(new Date(System.currentTimeMillis() - 3600000));
-
-            mockedStatic.when(() -> JwtUtil.verifyToken("mock-token")).thenReturn(mockedJWT);
-            mockedStatic.when(() -> JwtUtil.getUserId("mock-token")).thenReturn("10000001");
+            setupJwtMock(mockedStatic);
 
             mockMvc.perform(multipart("/post/uploadImage")
                             .file(emptyFile)
@@ -115,23 +112,15 @@ class PostControllerTest {
         when(postService.addPost(any(AddPostRequest.class), anyString(), anyInt())).thenReturn(1);
         when(experienceService.changeExp(eq("10000001"), anyInt())).thenReturn(true);
 
-        try (MockedStatic<JwtUtil> mockedStatic = mockStatic(JwtUtil.class)) {
-            DecodedJWT mockedJWT = mock(DecodedJWT.class);
-            Claim mockedUserIdClaim = mock(Claim.class);
-            when(mockedJWT.getClaim("userId")).thenReturn(mockedUserIdClaim);
-            when(mockedUserIdClaim.asString()).thenReturn("10000001");
-            when(mockedJWT.getIssuer()).thenReturn("yourExpectedIssuer");
-            when(mockedJWT.getAudience()).thenReturn(List.of("yourExpectedAudience"));
-            when(mockedJWT.getExpiresAt()).thenReturn(new Date(System.currentTimeMillis() + 3600000));
-            when(mockedJWT.getIssuedAt()).thenReturn(new Date(System.currentTimeMillis() - 3600000));
-            mockedStatic.when(() -> JwtUtil.verifyToken("mock-token")).thenReturn(mockedJWT);
-            mockedStatic.when(() -> JwtUtil.getUserId("mock-token")).thenReturn("10000001");
+        try (MockedStatic<JwtUtil> mockedJwt = mockStatic(JwtUtil.class);
+             MockedStatic<ExamineService> mockedExamine = mockStatic(ExamineService.class)) {
+            setupJwtMock(mockedJwt);
+            mockedExamine.when(() -> ExamineService.TextCensor(anyString())).thenReturn(null);
 
             mockMvc.perform(post("/post/postUpload")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(req))
-                            .header("token", "mock-token")
-                            .requestAttr("userId", "10000001"))
+                            .header("token", "mock-token"))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.message").value("上传成功"));
         }
@@ -150,23 +139,12 @@ class PostControllerTest {
         when(experienceService.getLevel(anyInt())).thenReturn(2);
 
         try (MockedStatic<JwtUtil> mockedStatic = mockStatic(JwtUtil.class)) {
-            DecodedJWT mockedJWT = mock(DecodedJWT.class);
-            Claim mockedUserIdClaim = mock(Claim.class);
-            when(mockedJWT.getClaim("userId")).thenReturn(mockedUserIdClaim);
-            when(mockedUserIdClaim.asString()).thenReturn("10000001");
-            when(mockedJWT.getIssuer()).thenReturn("yourExpectedIssuer");
-            when(mockedJWT.getAudience()).thenReturn(List.of("yourExpectedAudience"));
-            when(mockedJWT.getExpiresAt()).thenReturn(new Date(System.currentTimeMillis() + 3600000));
-            when(mockedJWT.getIssuedAt()).thenReturn(new Date(System.currentTimeMillis() - 3600000));
-
-            mockedStatic.when(() -> JwtUtil.verifyToken("mock-token")).thenReturn(mockedJWT);
-            mockedStatic.when(() -> JwtUtil.getUserId("mock-token")).thenReturn("10000001");
+            setupJwtMock(mockedStatic);
 
             mockMvc.perform(post("/post/postUpload")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(req))
-                            .header("token", "mock-token")
-                            .requestAttr("userId", "10000001"))
+                            .header("token", "mock-token"))
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("$.message").value("未填写标题"));
         }
@@ -198,20 +176,29 @@ class PostControllerTest {
         when(experienceService.changeExp(eq("10000001"), anyInt())).thenReturn(true);
         doNothing().when(postService).addBrowse(eq(1));
 
-        mockMvc.perform(post("/post/postDetail")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(req))
-                        .requestAttr("userId", "10000001"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.id").value(1));
-        verify(postService, times(2)).getPost(eq(1));
+        try (MockedStatic<JwtUtil> mockedStatic = mockStatic(JwtUtil.class)) {
+            setupJwtMock(mockedStatic);
+
+            mockMvc.perform(post("/post/postDetail")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(req))
+                            .header("token", "mock-token"))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.message.id").value(1));
+            verify(postService, times(2)).getPost(eq(1));
+        }
 
         when(postService.getPost(eq(1))).thenThrow(new PostException("Not found"));
-        mockMvc.perform(post("/post/postDetail")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(req))
-                        .requestAttr("userId", "10000001"))
-                .andExpect(status().isInternalServerError());
+
+        try (MockedStatic<JwtUtil> mockedStatic = mockStatic(JwtUtil.class)) {
+            setupJwtMock(mockedStatic);
+
+            mockMvc.perform(post("/post/postDetail")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(req))
+                            .header("token", "mock-token"))
+                    .andExpect(status().isInternalServerError());
+        }
     }
 
     @Test
@@ -231,20 +218,29 @@ class PostControllerTest {
         when(experienceService.getLevel(anyInt())).thenReturn(2);
         when(experienceService.getLevelName(eq(2))).thenReturn("Level 2");
 
-        mockMvc.perform(post("/post/postList")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(req))
-                        .requestAttr("userId", "10000001"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.list[0].userName").value("User"));
-        verify(postService).getPostList(eq(10000001), any(ListPostRequest.class));
+        try (MockedStatic<JwtUtil> mockedStatic = mockStatic(JwtUtil.class)) {
+            setupJwtMock(mockedStatic);
+
+            mockMvc.perform(post("/post/postList")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(req))
+                            .header("token", "mock-token"))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.message.list[0].userName").value("User"));
+            verify(postService).getPostList(eq(10000001), any(ListPostRequest.class));
+        }
 
         when(postService.getPostList(eq(10000001), any(ListPostRequest.class))).thenThrow(new PostException("Error"));
-        mockMvc.perform(post("/post/postList")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(req))
-                        .requestAttr("userId", "10000001"))
-                .andExpect(status().isInternalServerError());
+
+        try (MockedStatic<JwtUtil> mockedStatic = mockStatic(JwtUtil.class)) {
+            setupJwtMock(mockedStatic);
+
+            mockMvc.perform(post("/post/postList")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(req))
+                            .header("token", "mock-token"))
+                    .andExpect(status().isInternalServerError());
+        }
     }
 
     @Test
@@ -266,19 +262,28 @@ class PostControllerTest {
         when(experienceService.changeExp(eq("10000001"), anyInt())).thenReturn(true);
         doNothing().when(ossService).deleteFile(anyString());
 
-        mockMvc.perform(delete("/post/postDelete")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(req))
-                        .requestAttr("userId", "10000001"))
-                .andExpect(status().isOk());
-        verify(postService).deletePost(any(DeletePostRequest.class));
+        try (MockedStatic<JwtUtil> mockedStatic = mockStatic(JwtUtil.class)) {
+            setupJwtMock(mockedStatic);
+
+            mockMvc.perform(delete("/post/postDelete")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(req))
+                            .header("token", "mock-token"))
+                    .andExpect(status().isOk());
+            verify(postService).deletePost(any(DeletePostRequest.class));
+        }
 
         when(postService.deletePost(any(DeletePostRequest.class))).thenReturn(false);
-        mockMvc.perform(delete("/post/postDelete")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(req))
-                        .requestAttr("userId", "10000001"))
-                .andExpect(status().isBadRequest());
+
+        try (MockedStatic<JwtUtil> mockedStatic = mockStatic(JwtUtil.class)) {
+            setupJwtMock(mockedStatic);
+
+            mockMvc.perform(delete("/post/postDelete")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(req))
+                            .header("token", "mock-token"))
+                    .andExpect(status().isBadRequest());
+        }
     }
 
     @Test
@@ -296,19 +301,28 @@ class PostControllerTest {
         when(likeService.addLike(eq(10000001), eq(1))).thenReturn(true);
         when(experienceService.changeExp(anyString(), anyInt())).thenReturn(true);
 
-        mockMvc.perform(post("/post/postLike")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(req))
-                        .requestAttr("userId", "10000001"))
-                .andExpect(status().isOk());
-        verify(likeService).addLike(eq(10000001), eq(1));
+        try (MockedStatic<JwtUtil> mockedStatic = mockStatic(JwtUtil.class)) {
+            setupJwtMock(mockedStatic);
+
+            mockMvc.perform(post("/post/postLike")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(req))
+                            .header("token", "mock-token"))
+                    .andExpect(status().isOk());
+            verify(likeService).addLike(eq(10000001), eq(1));
+        }
 
         when(experienceService.getLevel(anyInt())).thenReturn(0);
-        mockMvc.perform(post("/post/postLike")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(req))
-                        .requestAttr("userId", "10000001"))
-                .andExpect(status().isBadRequest());
+
+        try (MockedStatic<JwtUtil> mockedStatic = mockStatic(JwtUtil.class)) {
+            setupJwtMock(mockedStatic);
+
+            mockMvc.perform(post("/post/postLike")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(req))
+                            .header("token", "mock-token"))
+                    .andExpect(status().isBadRequest());
+        }
     }
 
     @Test
@@ -323,26 +337,37 @@ class PostControllerTest {
 
         when(postService.getPost(eq(1))).thenReturn(post);
         when(experienceService.getLevel(anyInt())).thenReturn(2);
-        when(examineService.TextCensor(anyString())).thenReturn(null);
         when(commentService.addComment(any(CommentPostRequest.class), anyString())).thenReturn(true);
         when(ossService.submitFile(anyString())).thenReturn(true);
         when(experienceService.changeExp(eq("10000001"), anyInt())).thenReturn(true);
         when(postService.updateUpdateTime(eq(1))).thenReturn(true);
 
-        mockMvc.perform(post("/post/postComment")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(req))
-                        .requestAttr("userId", "10000001"))
-                .andExpect(status().isOk());
-        verify(commentService).addComment(any(CommentPostRequest.class), anyString());
+        try (MockedStatic<JwtUtil> mockedJwt = mockStatic(JwtUtil.class);
+             MockedStatic<ExamineService> mockedExamine = mockStatic(ExamineService.class)) {
+            setupJwtMock(mockedJwt);
+            mockedExamine.when(() -> ExamineService.TextCensor(anyString())).thenReturn(null);
+
+            mockMvc.perform(post("/post/postComment")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(req))
+                            .header("token", "mock-token"))
+                    .andExpect(status().isOk());
+            verify(commentService).addComment(any(CommentPostRequest.class), anyString());
+        }
 
         req.setContent("");
-        mockMvc.perform(post("/post/postComment")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(req))
-                        .requestAttr("userId", "10000001"))
-                .andExpect(status().isBadRequest());
+
+        try (MockedStatic<JwtUtil> mockedStatic = mockStatic(JwtUtil.class)) {
+            setupJwtMock(mockedStatic);
+
+            mockMvc.perform(post("/post/postComment")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(req))
+                            .header("token", "mock-token"))
+                    .andExpect(status().isBadRequest());
+        }
     }
+
 
     @Test
     void listComment() throws Exception {
@@ -351,19 +376,38 @@ class PostControllerTest {
         Page<CommentEntry> page = new Page<>();
         when(commentService.getCommentList(any(ListCommentRequest.class))).thenReturn(page);
 
-        mockMvc.perform(post("/post/commentList")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(req))
-                        .requestAttr("userId", "10000001"))
-                .andExpect(status().isOk());
-        verify(commentService).getCommentList(any(ListCommentRequest.class));
+        try (MockedStatic<JwtUtil> mockedStatic = mockStatic(JwtUtil.class)) {
+            setupJwtMock(mockedStatic);
+
+            mockMvc.perform(post("/post/commentList")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(req))
+                            .header("token", "mock-token"))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.message").exists());
+            verify(commentService).getCommentList(any(ListCommentRequest.class));
+        }
 
         when(commentService.getCommentList(any(ListCommentRequest.class))).thenThrow(new CommentException("Error"));
-        mockMvc.perform(post("/post/commentList")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(req))
-                        .requestAttr("userId", "10000001"))
-                .andExpect(status().isInternalServerError());
+
+        try (MockedStatic<JwtUtil> mockedStatic = mockStatic(JwtUtil.class)) {
+            setupJwtMock(mockedStatic);
+
+            mockMvc.perform(post("/post/commentList")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(req))
+                    .header("token", "mock-token"));
+
+            fail("Expected ServletException to be thrown");
+        } catch (ServletException e) {
+            assertNotNull(e.getCause());
+            assertTrue(e.getCause() instanceof RuntimeException);
+
+            Throwable svc = e.getCause().getCause();
+            assertNotNull(svc);
+            assertTrue(svc instanceof CommentException);
+            assertEquals("Error", svc.getMessage());
+        }
     }
 
     @Test
@@ -373,19 +417,36 @@ class PostControllerTest {
         List<ReplyEntry> replies = List.of(new ReplyEntry());
         when(replyService.getReplyList(any(ListReplyRequest.class))).thenReturn(replies);
 
-        mockMvc.perform(post("/post/replyList")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(req))
-                        .requestAttr("userId", "10000001"))
-                .andExpect(status().isOk());
-        verify(replyService).getReplyList(any(ListReplyRequest.class));
+        try (MockedStatic<JwtUtil> mockedStatic = mockStatic(JwtUtil.class)) {
+            setupJwtMock(mockedStatic);
+
+            mockMvc.perform(post("/post/replyList")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(req))
+                            .header("token", "mock-token"))
+                    .andExpect(status().isOk());
+            verify(replyService).getReplyList(any(ListReplyRequest.class));
+        }
 
         when(replyService.getReplyList(any(ListReplyRequest.class))).thenThrow(new ReplyException("Error"));
-        mockMvc.perform(post("/post/replyList")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(req))
-                        .requestAttr("userId", "10000001"))
-                .andExpect(status().isInternalServerError());
+
+        try (MockedStatic<JwtUtil> mockedStatic = mockStatic(JwtUtil.class)) {
+            setupJwtMock(mockedStatic);
+
+            // Expect the throw
+            mockMvc.perform(post("/post/replyList")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(req))
+                    .header("token", "mock-token"));
+
+            fail("Expected ServletException to be thrown");
+        } catch (ServletException e) {
+            assertNotNull(e.getCause());
+            assertTrue(e.getCause() instanceof RuntimeException); // From controller
+            assertNotNull(e.getCause().getCause());
+            assertTrue(e.getCause().getCause() instanceof ReplyException); // From service
+            assertEquals("Error", e.getCause().getCause().getMessage());
+        }
     }
 
     @Test
@@ -400,24 +461,34 @@ class PostControllerTest {
 
         when(postService.getPost(eq(1))).thenReturn(post);
         when(experienceService.getLevel(anyInt())).thenReturn(2);
-        when(examineService.TextCensor(anyString())).thenReturn(null);
         when(replyService.addReply(any(ReplyCommentRequest.class))).thenReturn(new ReplyEntry());
         when(experienceService.changeExp(eq("10000001"), anyInt())).thenReturn(true);
         when(postService.updateUpdateTime(eq(1))).thenReturn(true);
 
-        mockMvc.perform(post("/post/commentReply")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(req))
-                        .requestAttr("userId", "10000001"))
-                .andExpect(status().isOk());
-        verify(replyService).addReply(any(ReplyCommentRequest.class));
+        try (MockedStatic<JwtUtil> mockedJwt = mockStatic(JwtUtil.class);
+             MockedStatic<ExamineService> mockedExamine = mockStatic(ExamineService.class)) {
+            setupJwtMock(mockedJwt);
+            mockedExamine.when(() -> ExamineService.TextCensor(anyString())).thenReturn(null);
+
+            mockMvc.perform(post("/post/commentReply")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(req))
+                            .header("token", "mock-token"))
+                    .andExpect(status().isOk());
+            verify(replyService).addReply(any(ReplyCommentRequest.class));
+        }
 
         req.setContent("");
-        mockMvc.perform(post("/post/commentReply")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(req))
-                        .requestAttr("userId", "10000001"))
-                .andExpect(status().isBadRequest());
+
+        try (MockedStatic<JwtUtil> mockedStatic = mockStatic(JwtUtil.class)) {
+            setupJwtMock(mockedStatic);
+
+            mockMvc.perform(post("/post/commentReply")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(req))
+                            .header("token", "mock-token"))
+                    .andExpect(status().isBadRequest());
+        }
     }
 
     @Test
@@ -433,19 +504,28 @@ class PostControllerTest {
         doNothing().when(ossService).deleteFile(anyString());
         when(experienceService.changeExp(eq("10000001"), anyInt())).thenReturn(true);
 
-        mockMvc.perform(delete("/post/commentDelete")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(req))
-                        .requestAttr("userId", "10000001"))
-                .andExpect(status().isOk());
-        verify(commentService).deleteComment(any(DeleteCommentRequest.class), eq(10000001));
+        try (MockedStatic<JwtUtil> mockedStatic = mockStatic(JwtUtil.class)) {
+            setupJwtMock(mockedStatic);
+
+            mockMvc.perform(delete("/post/commentDelete")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(req))
+                            .header("token", "mock-token"))
+                    .andExpect(status().isOk());
+            verify(commentService).deleteComment(any(DeleteCommentRequest.class), eq(10000001));
+        }
 
         when(commentService.deleteComment(any(DeleteCommentRequest.class), eq(10000001))).thenReturn(false);
-        mockMvc.perform(delete("/post/commentDelete")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(req))
-                        .requestAttr("userId", "10000001"))
-                .andExpect(status().isBadRequest());
+
+        try (MockedStatic<JwtUtil> mockedStatic = mockStatic(JwtUtil.class)) {
+            setupJwtMock(mockedStatic);
+
+            mockMvc.perform(delete("/post/commentDelete")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(req))
+                            .header("token", "mock-token"))
+                    .andExpect(status().isBadRequest());
+        }
     }
 
     @Test
@@ -456,19 +536,28 @@ class PostControllerTest {
         when(replyService.deleteReply(any(DeleteReplyRequest.class), eq(10000001))).thenReturn(true);
         when(experienceService.changeExp(eq("10000001"), anyInt())).thenReturn(true);
 
-        mockMvc.perform(delete("/post/replyDelete")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(req))
-                        .requestAttr("userId", "10000001"))
-                .andExpect(status().isOk());
-        verify(replyService).deleteReply(any(DeleteReplyRequest.class), eq(10000001));
+        try (MockedStatic<JwtUtil> mockedStatic = mockStatic(JwtUtil.class)) {
+            setupJwtMock(mockedStatic);
+
+            mockMvc.perform(delete("/post/replyDelete")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(req))
+                            .header("token", "mock-token"))
+                    .andExpect(status().isOk());
+            verify(replyService).deleteReply(any(DeleteReplyRequest.class), eq(10000001));
+        }
 
         when(replyService.deleteReply(any(DeleteReplyRequest.class), eq(10000001))).thenReturn(false);
-        mockMvc.perform(delete("/post/replyDelete")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(req))
-                        .requestAttr("userId", "10000001"))
-                .andExpect(status().isBadRequest());
+
+        try (MockedStatic<JwtUtil> mockedStatic = mockStatic(JwtUtil.class)) {
+            setupJwtMock(mockedStatic);
+
+            mockMvc.perform(delete("/post/replyDelete")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(req))
+                            .header("token", "mock-token"))
+                    .andExpect(status().isBadRequest());
+        }
     }
 
     @Test
@@ -482,16 +571,24 @@ class PostControllerTest {
         when(userService.getUserInfo(anyString())).thenReturn(new UserDetail());
         when(userService.getProfilePhotoUrl(anyInt())).thenReturn("photo.jpg");
 
-        mockMvc.perform(get("/post/getHotPost")
-                        .requestAttr("userId", "10000001"))
-                .andExpect(status().isOk());
-        verify(postService).getPostByHot(eq(10000001));
+        try (MockedStatic<JwtUtil> mockedStatic = mockStatic(JwtUtil.class)) {
+            setupJwtMock(mockedStatic);
 
-        when(postService.getPostByHot(eq(10000001))).thenReturn(List.of(summary));
+            mockMvc.perform(get("/post/getHotPost")
+                            .header("token", "mock-token"))
+                    .andExpect(status().isOk());
+            verify(postService).getPostByHot(eq(10000001));
+        }
+
         when(experienceService.getLevel(anyInt())).thenReturn(-1);
-        mockMvc.perform(get("/post/getHotPost")
-                        .requestAttr("userId", "10000001"))
-                .andExpect(status().isInternalServerError());
+
+        try (MockedStatic<JwtUtil> mockedStatic = mockStatic(JwtUtil.class)) {
+            setupJwtMock(mockedStatic);
+
+            mockMvc.perform(get("/post/getHotPost")
+                            .header("token", "mock-token"))
+                    .andExpect(status().isInternalServerError());
+        }
     }
 
     @Test

@@ -381,26 +381,6 @@ public class PostController {
         listCommentRequest.setUserId(userId);
         try {
             Page<CommentEntry> commentEntryPage = commentService.getCommentList(listCommentRequest);
-//            for(CommentEntry commentEntry: commentEntryPage.getList()){
-//                Integer nowId = commentEntry.getUserId();
-//                System.out.println(nowId);
-//                ListReplyRequest listReplyRequest = new ListReplyRequest();
-//                listReplyRequest.setCommentId(commentEntry.getId());
-//                if(nowId == null){
-//                    commentEntry.setUserLevel(UserConstants.DELETE_AUTHORITY);
-//                    commentEntry.setUserLevelName(null);
-//                } else {
-//                    int level = experienceService.getLevel(nowId);
-//                    if(level < 0){
-//                        return RestBean.failure(HttpStatus.INTERNAL_SERVER_ERROR, "等级获取失败");
-//                    }
-//                    commentEntry.setUserLevel(level);
-//                    commentEntry.setUserLevelName(experienceService.getLevelName(level));
-//                }
-//                listReplyRequest.setUserId(userId);
-//                listReplyRequest.setCntInPage(3);
-//                commentEntry.setReplyList(replyService.getReplyList(listReplyRequest));
-//            }
             return RestBean.success(commentEntryPage);
         }  catch (CommentException e) {
             throw new RuntimeException(e);
