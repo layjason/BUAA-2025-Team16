@@ -1,3 +1,5 @@
 com/example/lal/Controller/PostControllerTest.class
+com/example/lal/Controller/StatisticControllerTest.class
 com/example/lal/LalApplicationTests.class
 com/example/lal/service/impl/PostServiceImplTest.class
+com/example/lal/Controller/ConsoleControllerTest.class
