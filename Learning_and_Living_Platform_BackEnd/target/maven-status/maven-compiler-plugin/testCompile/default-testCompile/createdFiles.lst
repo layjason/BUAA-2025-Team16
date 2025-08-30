@@ -1,1 +1,3 @@
-com\example\lal\LalApplicationTests.class
+com\example\lal\Controller\StatisticControllerTest.class
+com\example\lal\service\impl\DownloadHistoryServiceImplTest.class
+com\example\lal\Controller\ConsoleControllerTest.class

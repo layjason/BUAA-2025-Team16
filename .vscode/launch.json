@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-LalApplication<LAL>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.example.lal.LalApplication",
+            "projectName": "LAL",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
