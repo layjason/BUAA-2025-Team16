@@ -1,1 +1,11 @@
+com\example\lal\Controller\UserControllerTest.class
+com\example\lal\Controller\PostControllerTest.class
+com\example\lal\service\impl\DownloadHistoryServiceImplTest.class
+com\example\lal\Controller\ConsoleControllerTest.class
+com\example\lal\service\impl\OSSServiceImplTest.class
+com\example\lal\service\impl\UserServiceImplTest.class
+com\example\lal\service\impl\ResourceServiceImplTest.class
+com\example\lal\Controller\StatisticControllerTest.class
 com\example\lal\LalApplicationTests.class
+com\example\lal\Controller\ResourceControllerTest.class
+com\example\lal\service\impl\PostServiceImplTest.class
