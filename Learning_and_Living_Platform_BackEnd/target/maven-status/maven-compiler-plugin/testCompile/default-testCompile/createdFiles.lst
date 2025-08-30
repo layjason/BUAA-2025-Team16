@@ -1,3 +1,5 @@
-com\example\lal\Controller\StatisticControllerTest.class
-com\example\lal\service\impl\DownloadHistoryServiceImplTest.class
-com\example\lal\Controller\ConsoleControllerTest.class
+com\example\lal\service\impl\OSSServiceImplTest.class
+com\example\lal\service\impl\ResourceServiceImplTest.class
+com\example\lal\LalApplicationTests.class
+com\example\lal\Controller\ResourceControllerTest.class
+
